@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica de verbos - Italiano 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d0f0ff; /* Azul claro pastel */
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            font-style: italic;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #opcion1 { background-color: #ffff99; } /* Amarillo claro */
+        #opcion2 { background-color: #ccffcc; } /* Verde claro */
+        #opcion3 { background-color: #ffcccc; } /* Rojo claro */
+        #reiniciar { background-color: #99ccff; } /* Azul */
+        #generar { background-color: #e6ccff; } /* Violeta claro */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        input {
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        input:disabled {
+            opacity: 1;
+        }
+
+        .correct {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+
+        .correct-answer {
+            font-size: 12px;
+            color: green;
+            margin-top: 2px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Práctica de verbos - Italiano 3</h1>
+
+    <div class="button-container">
+        <button id="opcion1">OPCION 1</button>
+        <button id="opcion2">OPCION 2</button>
+        <button id="opcion3">OPCION 3</button>
+        <button id="reiniciar">REINICIAR</button>
+        <button id="generar">GENERAR</button>
+    </div>
+
+    <table id="verb-table" class="hidden">
+        <thead id="table-header"></thead>
+        <tbody id="table-body"></tbody>
+    </table>
+
+    <script>
+        // Verbos comunes en italiano (regulares/irregulares/transitivos)
+        const verbos = [
+            "andare", "fare", "dire", "venire", "dovere", "potere", "volere", "sapere", "stare", "avere",
+            "essere", "vedere", "prendere", "mettere", "uscire", "rimanere", "tenere", "leggere", "scrivere", "aprire",
+            "chiudere", "vivere", "morire", "credere", "ricevere", "conoscere", "offrire", "soffrire", "finire", "sentire"
+        ];
+
+        const personas = ["io", "tu", "lui/lei", "noi", "voi", "loro"];
+
+        // Conjugaciones correctas para cada opción
+        const conjugaciones = {
+            // OPCION 1: Futuro semplice, Congiuntivo presente, Congiuntivo passato
+            1: {
+                "andare": {
+                    "io": ["andrò", "vada", "sia andato/a"],
+                    "tu": ["andrai", "vada", "sia andato/a"],
+                    "lui/lei": ["andrà", "vada", "sia andato/a"],
+                    "noi": ["andremo", "andiamo", "siamo andati/e"],
+                    "voi": ["andrete", "andiate", "siete andati/e"],
+                    "loro": ["andranno", "vadano", "siano andati/e"]
+                },
+                "fare": {
+                    "io": ["farò", "faccia", "abbia fatto"],
+                    "tu": ["farai", "faccia", "abbia fatto"],
+                    "lui/lei": ["farà", "faccia", "abbia fatto"],
+                    "noi": ["faremo", "facciamo", "abbiamo fatto"],
+                    "voi": ["farete", "facciate", "abbiate fatto"],
+                    "loro": ["faranno", "facciano", "abbiano fatto"]
+                },
+                "dire": {
+                    "io": ["dirò", "dica", "abbia detto"],
+                    "tu": ["dirai", "dica", "abbia detto"],
+                    "lui/lei": ["dirà", "dica", "abbia detto"],
+                    "noi": ["diremo", "diciamo", "abbiamo detto"],
+                    "voi": ["direte", "diciate", "abbiate detto"],
+                    "loro": ["diranno", "dicano", "abbiano detto"]
+                },
+                "venire": {
+                    "io": ["verrò", "venga", "sia venuto/a"],
+                    "tu": ["verrai", "venga", "sia venuto/a"],
+                    "lui/lei": ["verrà", "venga", "sia venuto/a"],
+                    "noi": ["verremo", "veniamo", "siamo venuti/e"],
+                    "voi": ["verrete", "veniate", "siete venuti/e"],
+                    "loro": ["verranno", "vengano", "siano venuti/e"]
+                },
+                "dovere": {
+                    "io": ["dovrò", "debba", "abbia dovuto"],
+                    "tu": ["dovrai", "debba", "abbia dovuto"],
+                    "lui/lei": ["dovrà", "debba", "abbia dovuto"],
+                    "noi": ["dovremo", "dobbiamo", "abbiamo dovuto"],
+                    "voi": ["dovrete", "dobbiate", "abbiate dovuto"],
+                    "loro": ["dovranno", "debbano", "abbiano dovuto"]
+                },
+                "potere": {
+                    "io": ["potrò", "possa", "abbia potuto"],
+                    "tu": ["potrai", "possa", "abbia potuto"],
+                    "lui/lei": ["potrà", "possa", "abbia potuto"],
+                    "noi": ["potremo", "possiamo", "abbiamo potuto"],
+                    "voi": ["potrete", "possiate", "abbiate potuto"],
+                    "loro": ["potranno", "possano", "abbiano potuto"]
+                },
+                "volere": {
+                    "io": ["vorrò", "voglia", "abbia voluto"],
+                    "tu": ["vorrai", "voglia", "abbia voluto"],
+                    "lui/lei": ["vorrà", "voglia", "abbia voluto"],
+                    "noi": ["vorremo", "vogliamo", "abbiamo voluto"],
+                    "voi": ["vorrete", "vogliate", "abbiate voluto"],
+                    "loro": ["vorranno", "voglino", "abbiano voluto"]
+                },
+                "sapere": {
+                    "io": ["saprò", "sappia", "abbia saputo"],
+                    "tu": ["saprai", "sappia", "abbia saputo"],
+                    "lui/lei": ["saprà", "sappia", "abbia saputo"],
+                    "noi": ["sapremo", "sappiamo", "abbiamo saputo"],
+                    "voi": ["saprete", "sappiate", "abbiate saputo"],
+                    "loro": ["sapranno", "sappiano", "abbiano saputo"]
+                },
+                "stare": {
+                    "io": ["starò", "stia", "sia stato/a"],
+                    "tu": ["starai", "stia", "sia stato/a"],
+                    "lui/lei": ["starà", "stia", "sia stato/a"],
+                    "noi": ["staremo", "stiamo", "siamo stati/e"],
+                    "voi": ["starete", "stiate", "siete stati/e"],
+                    "loro": ["staranno", "stiano", "siano stati/e"]
+                },
+                "avere": {
+                    "io": ["avrò", "abbia", "abbia avuto"],
+                    "tu": ["avrai", "abbia", "abbia avuto"],
+                    "lui/lei": ["avrà", "abbia", "abbia avuto"],
+                    "noi": ["avremo", "abbiamo", "abbiamo avuto"],
+                    "voi": ["avrete", "abbiate", "abbiate avuto"],
+                    "loro": ["avranno", "abbiano", "abbiano avuto"]
+                },
+                "essere": {
+                    "io": ["sarò", "sia", "sia stato/a"],
+                    "tu": ["sarai", "sia", "sia stato/a"],
+                    "lui/lei": ["sarà", "sia", "sia stato/a"],
+                    "noi": ["saremo", "siamo", "siamo stati/e"],
+                    "voi": ["sarete", "siate", "siete stati/e"],
+                    "loro": ["saranno", "siano", "siano stati/e"]
+                },
+                "vedere": {
+                    "io": ["vedrò", "veda", "abbia visto"],
+                    "tu": ["vedrai", "veda", "abbia visto"],
+                    "lui/lei": ["vedrà", "veda", "abbia visto"],
+                    "noi": ["vedremo", "vediamo", "abbiamo visto"],
+                    "voi": ["vedrete", "vediate", "abbiate visto"],
+                    "loro": ["vedranno", "vedano", "abbiano visto"]
+                },
+                "prendere": {
+                    "io": ["prenderò", "prenda", "abbia preso"],
+                    "tu": ["prenderai", "prenda", "abbia preso"],
+                    "lui/lei": ["prenderà", "prenda", "abbia preso"],
+                    "noi": ["prenderemo", "prendiamo", "abbiamo preso"],
+                    "voi": ["prenderete", "prendiate", "abbiate preso"],
+                    "loro": ["prenderanno", "prendano", "abbiano preso"]
+                },
+                "mettere": {
+                    "io": ["metterò", "metta", "abbia messo"],
+                    "tu": ["metterai", "metta", "abbia messo"],
+                    "lui/lei": ["metterà", "metta", "abbia messo"],
+                    "noi": ["metteremo", "mettiamo", "abbiamo messo"],
+                    "voi": ["metterete", "mettiate", "abbiate messo"],
+                    "loro": ["metteranno", "mettano", "abbiano messo"]
+                },
+                "uscire": {
+                    "io": ["uscirò", "esca", "sia uscito/a"],
+                    "tu": ["uscirai", "esca", "sia uscito/a"],
+                    "lui/lei": ["uscirà", "esca", "sia uscito/a"],
+                    "noi": ["usciremo", "usciamo", "siamo usciti/e"],
+                    "voi": ["uscirete", "usciate", "siete usciti/e"],
+                    "loro": ["usciranno", "escano", "siano usciti/e"]
+                },
+                "rimanere": {
+                    "io": ["rimarrò", "rimanga", "sia rimasto/a"],
+                    "tu": ["rimarrai", "rimanga", "sia rimasto/a"],
+                    "lui/lei": ["rimarrà", "rimanga", "sia rimasto/a"],
+                    "noi": ["rimarremo", "rimaniamo", "siamo rimasti/e"],
+                    "voi": ["rimarrete", "rimaniate", "siete rimasti/e"],
+                    "loro": ["rimarranno", "rimangano", "siano rimasti/e"]
+                },
+                "tenere": {
+                    "io": ["terrò", "tenga", "abbia tenuto"],
+                    "tu": ["terrai", "tenga", "abbia tenuto"],
+                    "lui/lei": ["terrà", "tenga", "abbia tenuto"],
+                    "noi": ["terremo", "teniamo", "abbiamo tenuto"],
+                    "voi": ["terrete", "teniate", "abbiate tenuto"],
+                    "loro": ["terranno", "tengano", "abbiano tenuto"]
+                },
+                "leggere": {
+                    "io": ["leggerò", "legga", "abbia letto"],
+                    "tu": ["leggerai", "legga", "abbia letto"],
+                    "lui/lei": ["leggerà", "legga", "abbia letto"],
+                    "noi": ["leggeremo", "leggiamo", "abbiamo letto"],
+                    "voi": ["leggerete", "leggiate", "abbiate letto"],
+                    "loro": ["leggeranno", "leggano", "abbiano letto"]
+                },
+                "scrivere": {
+                    "io": ["scriverò", "scriva", "abbia scritto"],
+                    "tu": ["scriverai", "scriva", "abbia scritto"],
+                    "lui/lei": ["scriverà", "scriva", "abbia scritto"],
+                    "noi": ["scriveremo", "scriviamo", "abbiamo scritto"],
+                    "voi": ["scriverete", "scriviate", "abbiate scritto"],
+                    "loro": ["scriveranno", "scrivano", "abbiano scritto"]
+                },
+                "aprire": {
+                    "io": ["aprirò", "apra", "abbia aperto"],
+                    "tu": ["aprirai", "apra", "abbia aperto"],
+                    "lui/lei": ["aprirà", "apra", "abbia aperto"],
+                    "noi": ["apriremo", "apriamo", "abbiamo aperto"],
+                    "voi": ["aprirete", "apriate", "abbiate aperto"],
+                    "loro": ["apriranno", "aprano", "abbiano aperto"]
+                },
+                "chiudere": {
+                    "io": ["chiuderò", "chiuda", "abbia chiuso"],
+                    "tu": ["chiuderai", "chiuda", "abbia chiuso"],
+                    "lui/lei": ["chiuderà", "chiuda", "abbia chiuso"],
+                    "noi": ["chiuderemo", "chiudiamo", "abbiamo chiuso"],
+                    "voi": ["chiuderete", "chiudiate", "abbiate chiuso"],
+                    "loro": ["chiuderanno", "chiudano", "abbiano chiuso"]
+                },
+                "vivere": {
+                    "io": ["vivrò", "viva", "abbia vissuto"],
+                    "tu": ["vivrai", "viva", "abbia vissuto"],
+                    "lui/lei": ["vivrà", "viva", "abbia vissuto"],
+                    "noi": ["vivremo", "viviamo", "abbiamo vissuto"],
+                    "voi": ["vivrete", "viviate", "abbiate vissuto"],
+                    "loro": ["vivranno", "vivano", "abbiano vissuto"]
+                },
+                "morire": {
+                    "io": ["morirò", "muoia", "sia morto/a"],
+                    "tu": ["morirai", "muoia", "sia morto/a"],
+                    "lui/lei": ["morirà", "muoia", "sia morto/a"],
+                    "noi": ["moriremo", "moriamo", "siamo morti/e"],
+                    "voi": ["morirete", "moriate", "siete morti/e"],
+                    "loro": ["moriranno", "muoiano", "siano morti/e"]
+                },
+                "credere": {
+                    "io": ["crederò", "creda", "abbia creduto"],
+                    "tu": ["crederai", "creda", "abbia creduto"],
+                    "lui/lei": ["crederà", "creda", "abbia creduto"],
+                    "noi": ["crederemo", "crediamo", "abbiamo creduto"],
+                    "voi": ["crederete", "crediate", "abbiate creduto"],
+                    "loro": ["crederanno", "credano", "abbiano creduto"]
+                },
+                "ricevere": {
+                    "io": ["riceverò", "riceva", "abbia ricevuto"],
+                    "tu": ["riceverai", "riceva", "abbia ricevuto"],
+                    "lui/lei": ["riceverà", "riceva", "abbia ricevuto"],
+                    "noi": ["riceveremo", "riceviamo", "abbiamo ricevuto"],
+                    "voi": ["riceverete", "riceviate", "abbiate ricevuto"],
+                    "loro": ["riceveranno", "ricevano", "abbiano ricevuto"]
+                },
+                "conoscere": {
+                    "io": ["conoscerò", "conosca", "abbia conosciuto"],
+                    "tu": ["conoscerai", "conosca", "abbia conosciuto"],
+                    "lui/lei": ["conoscerà", "conosca", "abbia conosciuto"],
+                    "noi": ["conosceremo", "conosciamo", "abbiamo conosciuto"],
+                    "voi": ["conoscerete", "conosciate", "abbiate conosciuto"],
+                    "loro": ["conosceranno", "conoscano", "abbiano conosciuto"]
+                },
+                "offrire": {
+                    "io": ["offrirò", "offra", "abbia offerto"],
+                    "tu": ["offrirai", "offra", "abbia offerto"],
+                    "lui/lei": ["offrirà", "offra", "abbia offerto"],
+                    "noi": ["offriremo", "offriamo", "abbiamo offerto"],
+                    "voi": ["offrirete", "offriate", "abbiate offerto"],
+                    "loro": ["offriranno", "offrano", "abbiano offerto"]
+                },
+                "soffrire": {
+                    "io": ["soffrirò", "soffra", "abbia sofferto"],
+                    "tu": ["soffrirai", "soffra", "abbia sofferto"],
+                    "lui/lei": ["soffrirà", "soffra", "abbia sofferto"],
+                    "noi": ["soffriremo", "soffriamo", "abbiamo sofferto"],
+                    "voi": ["soffrirete", "soffriate", "abbiate sofferto"],
+                    "loro": ["soffriranno", "soffrano", "abbiano sofferto"]
+                },
+                "finire": {
+                    "io": ["finirò", "finisca", "abbia finito"],
+                    "tu": ["finirai", "finisca", "abbia finito"],
+                    "lui/lei": ["finirà", "finisca", "abbia finito"],
+                    "noi": ["finiremo", "finiamo", "abbiamo finito"],
+                    "voi": ["finirete", "finiate", "abbiate finito"],
+                    "loro": ["finiranno", "finiscano", "abbiano finito"]
+                },
+                "sentire": {
+                    "io": ["sentirò", "senta", "abbia sentito"],
+                    "tu": ["sentirai", "senta", "abbia sentito"],
+                    "lui/lei": ["sentirà", "senta", "abbia sentito"],
+                    "noi": ["sentiremo", "sentiamo", "abbiamo sentito"],
+                    "voi": ["sentirete", "sentiate", "abbiate sentito"],
+                    "loro": ["sentiranno", "sentano", "abbiano sentito"]
+                }
+            },
+            // OPCION 2: Passato Prossimo, Imperfetto, Trapassato prossimo
+            2: {
+                "andare": {
+                    "io": ["sono andato/a", "andavo", "ero andato/a"],
+                    "tu": ["sei andato/a", "andavi", "eri andato/a"],
+                    "lui/lei": ["è andato/a", "andava", "era andato/a"],
+                    "noi": ["siamo andati/e", "andavamo", "eravamo andati/e"],
+                    "voi": ["siete andati/e", "andavate", "eravate andati/e"],
+                    "loro": ["sono andati/e", "andavano", "erano andati/e"]
+                },
+                "fare": {
+                    "io": ["ho fatto", "facevo", "avevo fatto"],
+                    "tu": ["hai fatto", "facevi", "avevi fatto"],
+                    "lui/lei": ["ha fatto", "faceva", "aveva fatto"],
+                    "noi": ["abbiamo fatto", "facevamo", "avevamo fatto"],
+                    "voi": ["avete fatto", "facevate", "avevate fatto"],
+                    "loro": ["hanno fatto", "facevano", "avevano fatto"]
+                },
+                "dire": {
+                    "io": ["ho detto", "dicevo", "avevo detto"],
+                    "tu": ["hai detto", "dicevi", "avevi detto"],
+                    "lui/lei": ["ha detto", "diceva", "aveva detto"],
+                    "noi": ["abbiamo detto", "dicevamo", "avevamo detto"],
+                    "voi": ["avete detto", "dicevate", "avevate detto"],
+                    "loro": ["hanno detto", "dicevano", "avevano detto"]
+                },
+                "venire": {
+                    "io": ["sono venuto/a", "venivo", "ero venuto/a"],
+                    "tu": ["sei venuto/a", "venivi", "eri venuto/a"],
+                    "lui/lei": ["è venuto/a", "veniva", "era venuto/a"],
+                    "noi": ["siamo venuti/e", "venivamo", "eravamo venuti/e"],
+                    "voi": ["siete venuti/e", "venivate", "eravate venuti/e"],
+                    "loro": ["sono venuti/e", "venivano", "erano venuti/e"]
+                },
+                "dovere": {
+                    "io": ["ho dovuto", "dovevo", "avevo dovuto"],
+                    "tu": ["hai dovuto", "dovevi", "avevi dovuto"],
+                    "lui/lei": ["ha dovuto", "doveva", "aveva dovuto"],
+                    "noi": ["abbiamo dovuto", "dovevamo", "avevamo dovuto"],
+                    "voi": ["avete dovuto", "dovevate", "avevate dovuto"],
+                    "loro": ["hanno dovuto", "dovevano", "avevano dovuto"]
+                },
+                "potere": {
+                    "io": ["ho potuto", "potevo", "avevo potuto"],
+                    "tu": ["hai potuto", "potevi", "avevi potuto"],
+                    "lui/lei": ["ha potuto", "poteva", "aveva potuto"],
+                    "noi": ["abbiamo potuto", "potevamo", "avevamo potuto"],
+                    "voi": ["avete potuto", "potevate", "avevate potuto"],
+                    "loro": ["hanno potuto", "potevano", "avevano potuto"]
+                },
+                "volere": {
+                    "io": ["ho voluto", "volevo", "avevo voluto"],
+                    "tu": ["hai voluto", "volevi", "avevi voluto"],
+                    "lui/lei": ["ha voluto", "voleva", "aveva voluto"],
+                    "noi": ["abbiamo voluto", "volevamo", "avevamo voluto"],
+                    "voi": ["avete voluto", "volevate", "avevate voluto"],
+                    "loro": ["hanno voluto", "volevano", "avevano voluto"]
+                },
+                "sapere": {
+                    "io": ["ho saputo", "sapevo", "avevo saputo"],
+                    "tu": ["hai saputo", "sapevi", "avevi saputo"],
+                    "lui/lei": ["ha saputo", "sapeva", "aveva saputo"],
+                    "noi": ["abbiamo saputo", "sapevamo", "avevamo saputo"],
+                    "voi": ["avete saputo", "sapevate", "avevate saputo"],
+                    "loro": ["hanno saputo", "sapevano", "avevano saputo"]
+                },
+                "stare": {
+                    "io": ["sono stato/a", "stavo", "ero stato/a"],
+                    "tu": ["sei stato/a", "stavi", "eri stato/a"],
+                    "lui/lei": ["è stato/a", "stava", "era stato/a"],
+                    "noi": ["siamo stati/e", "stavamo", "eravamo stati/e"],
+                    "voi": ["siete stati/e", "stavate", "eravate stati/e"],
+                    "loro": ["sono stati/e", "stavano", "erano stati/e"]
+                },
+                "avere": {
+                    "io": ["ho avuto", "avevo", "avevo avuto"],
+                    "tu": ["hai avuto", "avevi", "avevi avuto"],
+                    "lui/lei": ["ha avuto", "aveva", "aveva avuto"],
+                    "noi": ["abbiamo avuto", "avevamo", "avevamo avuto"],
+                    "voi": ["avete avuto", "avevate", "avevate avuto"],
+                    "loro": ["hanno avuto", "avevano", "avevano avuto"]
+                },
+                "essere": {
+                    "io": ["sono stato/a", "ero", "ero stato/a"],
+                    "tu": ["sei stato/a", "eri", "eri stato/a"],
+                    "lui/lei": ["è stato/a", "era", "era stato/a"],
+                    "noi": ["siamo stati/e", "eravamo", "eravamo stati/e"],
+                    "voi": ["siete stati/e", "eravate", "eravate stati/e"],
+                    "loro": ["sono stati/e", "erano", "erano stati/e"]
+                },
+                "vedere": {
+                    "io": ["ho visto", "vedevo", "avevo visto"],
+                    "tu": ["hai visto", "vedevi", "avevi visto"],
+                    "lui/lei": ["ha visto", "vedeva", "aveva visto"],
+                    "noi": ["abbiamo visto", "vedevamo", "avevamo visto"],
+                    "voi": ["avete visto", "vedevate", "avevate visto"],
+                    "loro": ["hanno visto", "vedevano", "avevano visto"]
+                },
+                "prendere": {
+                    "io": ["ho preso", "prendevo", "avevo preso"],
+                    "tu": ["hai preso", "prendevi", "avevi preso"],
+                    "lui/lei": ["ha preso", "prendeva", "aveva preso"],
+                    "noi": ["abbiamo preso", "prendevamo", "avevamo preso"],
+                    "voi": ["avete preso", "prendevate", "avevate preso"],
+                    "loro": ["hanno preso", "prendevano", "avevano preso"]
+                },
+                "mettere": {
+                    "io": ["ho messo", "mettevo", "avevo messo"],
+                    "tu": ["hai messo", "mettevi", "avevi messo"],
+                    "lui/lei": ["ha messo", "metteva", "aveva messo"],
+                    "noi": ["abbiamo messo", "mettevamo", "avevamo messo"],
+                    "voi": ["avete messo", "mettevate", "avevate messo"],
+                    "loro": ["hanno messo", "mettevano", "avevano messo"]
+                },
+                "uscire": {
+                    "io": ["sono uscito/a", "uscivo", "ero uscito/a"],
+                    "tu": ["sei uscito/a", "uscivi", "eri uscito/a"],
+                    "lui/lei": ["è uscito/a", "usciva", "era uscito/a"],
+                    "noi": ["siamo usciti/e", "uscivamo", "eravamo usciti/e"],
+                    "voi": ["siete usciti/e", "uscivate", "eravate usciti/e"],
+                    "loro": ["sono usciti/e", "uscivano", "erano usciti/e"]
+                },
+                "rimanere": {
+                    "io": ["sono rimasto/a", "rimanevo", "ero rimasto/a"],
+                    "tu": ["sei rimasto/a", "rimanevi", "eri rimasto/a"],
+                    "lui/lei": ["è rimasto/a", "rimaneva", "era rimasto/a"],
+                    "noi": ["siamo rimasti/e", "rimanevamo", "eravamo rimasti/e"],
+                    "voi": ["siete rimasti/e", "rimanevate", "eravate rimasti/e"],
+                    "loro": ["sono rimasti/e", "rimanevano", "erano rimasti/e"]
+                },
+                "tenere": {
+                    "io": ["ho tenuto", "tenevo", "avevo tenuto"],
+                    "tu": ["hai tenuto", "tenevi", "avevi tenuto"],
+                    "lui/lei": ["ha tenuto", "teneva", "aveva tenuto"],
+                    "noi": ["abbiamo tenuto", "tenevamo", "avevamo tenuto"],
+                    "voi": ["avete tenuto", "tenevate", "avevate tenuto"],
+                    "loro": ["hanno tenuto", "tenevano", "avevano tenuto"]
+                },
+                "leggere": {
+                    "io": ["ho letto", "leggevo", "avevo letto"],
+                    "tu": ["hai letto", "leggevi", "avevi letto"],
+                    "lui/lei": ["ha letto", "leggeva", "aveva letto"],
+                    "noi": ["abbiamo letto", "leggevamo", "avevamo letto"],
+                    "voi": ["avete letto", "leggevate", "avevate letto"],
+                    "loro": ["hanno letto", "leggevano", "avevano letto"]
+                },
+                "scrivere": {
+                    "io": ["ho scritto", "scrivevo", "avevo scritto"],
+                    "tu": ["hai scritto", "scrivevi", "avevi scritto"],
+                    "lui/lei": ["ha scritto", "scriveva", "aveva scritto"],
+                    "noi": ["abbiamo scritto", "scrivevamo", "avevamo scritto"],
+                    "voi": ["avete scritto", "scrivevate", "avevate scritto"],
+                    "loro": ["hanno scritto", "scrivevano", "avevano scritto"]
+                },
+                "aprire": {
+                    "io": ["ho aperto", "aprivo", "avevo aperto"],
+                    "tu": ["hai aperto", "aprivi", "avevi aperto"],
+                    "lui/lei": ["ha aperto", "apriva", "aveva aperto"],
+                    "noi": ["abbiamo aperto", "aprivamo", "avevamo aperto"],
+                    "voi": ["avete aperto", "aprivate", "avevate aperto"],
+                    "loro": ["hanno aperto", "aprivano", "avevano aperto"]
+                },
+                "chiudere": {
+                    "io": ["ho chiuso", "chiudevo", "avevo chiuso"],
+                    "tu": ["hai chiuso", "chiudevi", "avevi chiuso"],
+                    "lui/lei": ["ha chiuso", "chiudeva", "aveva chiuso"],
+                    "noi": ["abbiamo chiuso", "chiudevamo", "avevamo chiuso"],
+                    "voi": ["avete chiuso", "chiudevate", "avevate chiuso"],
+                    "loro": ["hanno chiuso", "chiudevano", "avevano chiuso"]
+                },
+                "vivere": {
+                    "io": ["ho vissuto", "vivevo", "avevo vissuto"],
+                    "tu": ["hai vissuto", "vivevi", "avevi vissuto"],
+                    "lui/lei": ["ha vissuto", "viveva", "aveva vissuto"],
+                    "noi": ["abbiamo vissuto", "vivevamo", "avevamo vissuto"],
+                    "voi": ["avete vissuto", "vivevate", "avevate vissuto"],
+                    "loro": ["hanno vissuto", "vivevano", "avevano vissuto"]
+                },
+                "morire": {
+                    "io": ["sono morto/a", "morivo", "ero morto/a"],
+                    "tu": ["sei morto/a", "morivi", "eri morto/a"],
+                    "lui/lei": ["è morto/a", "moriva", "era morto/a"],
+                    "noi": ["siamo morti/e", "morivamo", "eravamo morti/e"],
+                    "voi": ["siete morti/e", "morivate", "eravate morti/e"],
+                    "loro": ["sono morti/e", "morivano", "erano morti/e"]
+                },
+                "credere": {
+                    "io": ["ho creduto", "credevo", "avevo creduto"],
+                    "tu": ["hai creduto", "credevi", "avevi creduto"],
+                    "lui/lei": ["ha creduto", "credeva", "aveva creduto"],
+                    "noi": ["abbiamo creduto", "credevamo", "avevamo creduto"],
+                    "voi": ["avete creduto", "credevate", "avevate creduto"],
+                    "loro": ["hanno creduto", "credevano", "avevano creduto"]
+                },
+                "ricevere": {
+                    "io": ["ho ricevuto", "ricevevo", "avevo ricevuto"],
+                    "tu": ["hai ricevuto", "ricevevi", "avevi ricevuto"],
+                    "lui/lei": ["ha ricevuto", "riceveva", "aveva ricevuto"],
+                    "noi": ["abbiamo ricevuto", "ricevevamo", "avevamo ricevuto"],
+                    "voi": ["avete ricevuto", "ricevevate", "avevate ricevuto"],
+                    "loro": ["hanno ricevuto", "ricevevano", "avevano ricevuto"]
+                },
+                "conoscere": {
+                    "io": ["ho conosciuto", "conoscevo", "avevo conosciuto"],
+                    "tu": ["hai conosciuto", "conoscevi", "avevi conosciuto"],
+                    "lui/lei": ["ha conosciuto", "conosceva", "aveva conosciuto"],
+                    "noi": ["abbiamo conosciuto", "conoscevamo", "avevamo conosciuto"],
+                    "voi": ["avete conosciuto", "conoscevate", "avevate conosciuto"],
+                    "loro": ["hanno conosciuto", "conoscevano", "avevano conosciuto"]
+                },
+                "offrire": {
+                    "io": ["ho offerto", "offrivo", "avevo offerto"],
+                    "tu": ["hai offerto", "offrivi", "avevi offerto"],
+                    "lui/lei": ["ha offerto", "offriva", "aveva offerto"],
+                    "noi": ["abbiamo offerto", "offrivamo", "avevamo offerto"],
+                    "voi": ["avete offerto", "offrivate", "avevate offerto"],
+                    "loro": ["hanno offerto", "offrivano", "avevano offerto"]
+                },
+                "soffrire": {
+                    "io": ["ho sofferto", "soffrivo", "avevo sofferto"],
+                    "tu": ["hai sofferto", "soffrivi", "avevi sofferto"],
+                    "lui/lei": ["ha sofferto", "soffriva", "aveva sofferto"],
+                    "noi": ["abbiamo sofferto", "soffrivamo", "avevamo sofferto"],
+                    "voi": ["avete sofferto", "soffrivate", "avevate sofferto"],
+                    "loro": ["hanno sofferto", "soffrivano", "avevano sofferto"]
+                },
+                "finire": {
+                    "io": ["ho finito", "finivo", "avevo finito"],
+                    "tu": ["hai finito", "finivi", "avevi finito"],
+                    "lui/lei": ["ha finito", "finiva", "aveva finito"],
+                    "noi": ["abbiamo finito", "finivamo", "avevamo finito"],
+                    "voi": ["avete finito", "finivate", "avevate finito"],
+                    "loro": ["hanno finito", "finivano", "avevano finito"]
+                },
+                "sentire": {
+                    "io": ["ho sentito", "sentivo", "avevo sentito"],
+                    "tu": ["hai sentito", "sentivi", "avevi sentito"],
+                    "lui/lei": ["ha sentito", "sentiva", "aveva sentito"],
+                    "noi": ["abbiamo sentito", "sentivamo", "avevamo sentito"],
+                    "voi": ["avete sentito", "sentivate", "avevate sentito"],
+                    "loro": ["hanno sentito", "sentivano", "avevano sentito"]
+                }
+            },
+            // OPCION 3: Congiuntivo Imperfetto, Congiuntivo Trapassato, Condizionale Presente
+            3: {
+                "andare": {
+                    "io": ["andassi", "fossi andato/a", "andrei"],
+                    "tu": ["andassi", "fossi andato/a", "anderesti"],
+                    "lui/lei": ["andasse", "fosse andato/a", "andrebbe"],
+                    "noi": ["andassimo", "fossimo andati/e", "andremmo"],
+                    "voi": ["andaste", "foste andati/e", "andreste"],
+                    "loro": ["andassero", "fossero andati/e", "andrebbero"]
+                },
+                "fare": {
+                    "io": ["facessi", "avessi fatto", "farei"],
+                    "tu": ["facessi", "avessi fatto", "faresti"],
+                    "lui/lei": ["facesse", "avesse fatto", "farebbe"],
+                    "noi": ["facessimo", "avessimo fatto", "faremmo"],
+                    "voi": ["faceste", "aveste fatto", "fareste"],
+                    "loro": ["facessero", "avessero fatto", "farebbero"]
+                },
+                "dire": {
+                    "io": ["dicessi", "avessi detto", "direi"],
+                    "tu": ["dicessi", "avessi detto", "diresti"],
+                    "lui/lei": ["dicesse", "avesse detto", "direbbe"],
+                    "noi": ["dicessimo", "avessimo detto", "diremmo"],
+                    "voi": ["diceste", "aveste detto", "direste"],
+                    "loro": ["dicessero", "avessero detto", "direbbero"]
+                },
+                "venire": {
+                    "io": ["venissi", "fossi venuto/a", "verrei"],
+                    "tu": ["venissi", "fossi venuto/a", "verresti"],
+                    "lui/lei": ["venisse", "fosse venuto/a", "verrebbe"],
+                    "noi": ["venissimo", "fossimo venuti/e", "verremmo"],
+                    "voi": ["veniste", "foste venuti/e", "verreste"],
+                    "loro": ["venissero", "fossero venuti/e", "verrebbero"]
+                },
+                "dovere": {
+                    "io": ["dovessi", "avessi dovuto", "dovrei"],
+                    "tu": ["dovessi", "avessi dovuto", "dovresti"],
+                    "lui/lei": ["dovesse", "avesse dovuto", "dovrebbe"],
+                    "noi": ["dovessimo", "avessimo dovuto", "dovremmo"],
+                    "voi": ["doveste", "aveste dovuto", "dovreste"],
+                    "loro": ["dovessero", "avessero dovuto", "dovrebbero"]
+                },
+                "potere": {
+                    "io": ["potessi", "avessi potuto", "potrei"],
+                    "tu": ["potessi", "avessi potuto", "potresti"],
+                    "lui/lei": ["potesse", "avesse potuto", "potrebbe"],
+                    "noi": ["potessimo", "avessimo potuto", "potremmo"],
+                    "voi": ["poteste", "aveste potuto", "potreste"],
+                    "loro": ["potessero", "avessero potuto", "potrebbero"]
+                },
+                "volere": {
+                    "io": ["volessi", "avessi voluto", "vorrei"],
+                    "tu": ["volessi", "avessi voluto", "vorresti"],
+                    "lui/lei": ["volesse", "avesse voluto", "vorrebbe"],
+                    "noi": ["volessimo", "avessimo voluto", "vorremmo"],
+                    "voi": ["voleste", "aveste voluto", "vorreste"],
+                    "loro": ["volessero", "avessero voluto", "vorrebbero"]
+                },
+                "sapere": {
+                    "io": ["sapessi", "avessi saputo", "saprei"],
+                    "tu": ["sapessi", "avessi saputo", "sapresti"],
+                    "lui/lei": ["sapesse", "avesse saputo", "saprebbe"],
+                    "noi": ["sapessimo", "avessimo saputo", "sapremmo"],
+                    "voi": ["sapesti", "aveste saputo", "sapreste"],
+                    "loro": ["sapessero", "avessero saputo", "saprebbero"]
+                },
+                "stare": {
+                    "io": ["stessi", "fossi stato/a", "starei"],
+                    "tu": ["stessi", "fossi stato/a", "staresti"],
+                    "lui/lei": ["stesse", "fosse stato/a", "starebbe"],
+                    "noi": ["stessimo", "fossimo stati/e", "staremmo"],
+                    "voi": ["steste", "foste stati/e", "stareste"],
+                    "loro": ["stessero", "fossero stati/e", "starebbero"]
+                },
+                "avere": {
+                    "io": ["avessi", "avessi avuto", "avrei"],
+                    "tu": ["avessi", "avessi avuto", "avresti"],
+                    "lui/lei": ["avesse", "avesse avuto", "avrebbe"],
+                    "noi": ["avessimo", "avessimo avuto", "avremmo"],
+                    "voi": ["aveste", "aveste avuto", "avreste"],
+                    "loro": ["avessero", "avessero avuto", "avrebbero"]
+                },
+                "essere": {
+                    "io": ["fossi", "fossi stato/a", "sarei"],
+                    "tu": ["fossi", "fossi stato/a", "saresti"],
+                    "lui/lei": ["fosse", "fosse stato/a", "sarebbe"],
+                    "noi": ["fossimo", "fossimo stati/e", "saremmo"],
+                    "voi": ["foste", "foste stati/e", "sareste"],
+                    "loro": ["fossero", "fossero stati/e", "sarebbero"]
+                },
+                "vedere": {
+                    "io": ["vedessi", "avessi visto", "vedrei"],
+                    "tu": ["vedessi", "avessi visto", "vedresti"],
+                    "lui/lei": ["vedesse", "avesse visto", "vedrebbe"],
+                    "noi": ["vedessimo", "avessimo visto", "vedremmo"],
+                    "voi": ["vedeste", "aveste visto", "vedreste"],
+                    "loro": ["vedessero", "avessero visto", "vedrebbero"]
+                },
+                "prendere": {
+                    "io": ["prendessi", "avessi preso", "prenderei"],
+                    "tu": ["prendessi", "avessi preso", "prenderesti"],
+                    "lui/lei": ["prendesse", "avesse preso", "prenderebbe"],
+                    "noi": ["prendessimo", "avessimo preso", "prenderemmo"],
+                    "voi": ["prendeste", "aveste preso", "prendereste"],
+                    "loro": ["prendessero", "avessero preso", "prenderebbero"]
+                },
+                "mettere": {
+                    "io": ["mettessi", "avessi messo", "metterei"],
+                    "tu": ["mettessi", "avessi messo", "metteresti"],
+                    "lui/lei": ["mettesse", "avesse messo", "metterebbe"],
+                    "noi": ["mettessimo", "avessimo messo", "metteremmo"],
+                    "voi": ["metteste", "aveste messo", "mettereste"],
+                    "loro": ["mettessero", "avessero messo", "metterebbero"]
+                },
+                "uscire": {
+                    "io": ["uscissi", "fossi uscito/a", "uscirei"],
+                    "tu": ["uscissi", "fossi uscito/a", "usciresti"],
+                    "lui/lei": ["uscisse", "fosse uscito/a", "uscirebbe"],
+                    "noi": ["uscissimo", "fossimo usciti/e", "usciremmo"],
+                    "voi": ["uscieste", "foste usciti/e", "uscireste"],
+                    "loro": ["uscissero", "fossero usciti/e", "uscirebbero"]
+                },
+                "rimanere": {
+                    "io": ["rimanessi", "fossi rimasto/a", "rimarrei"],
+                    "tu": ["rimanessi", "fossi rimasto/a", "rimarresti"],
+                    "lui/lei": ["rimanesse", "fosse rimasto/a", "rimarrebbe"],
+                    "noi": ["rimanessimo", "fossimo rimasti/e", "rimarremmo"],
+                    "voi": ["rimaneste", "foste rimasti/e", "rimareste"],
+                    "loro": ["rimanessero", "fossero rimasti/e", "rimarrebbero"]
+                },
+                "tenere": {
+                    "io": ["tenessi", "avessi tenuto", "terrei"],
+                    "tu": ["tenessi", "avessi tenuto", "terresti"],
+                    "lui/lei": ["tenesse", "avesse tenuto", "terrebbe"],
+                    "noi": ["tenessimo", "avessimo tenuto", "terremmo"],
+                    "voi": ["teneste", "aveste tenuto", "terreste"],
+                    "loro": ["tenessero", "avessero tenuto", "terrebbero"]
+                },
+                "leggere": {
+                    "io": ["leggessi", "avessi letto", "leggerei"],
+                    "tu": ["leggessi", "avessi letto", "leggeresti"],
+                    "lui/lei": ["leggese", "avesse letto", "leggerebbe"],
+                    "noi": ["leggessimo", "avessimo letto", "leggeremmo"],
+                    "voi": ["leggeste", "aveste letto", "leggereste"],
+                    "loro": ["leggessero", "avessero letto", "leggerebbero"]
+                },
+                "scrivere": {
+                    "io": ["scrivessi", "avessi scritto", "scriverei"],
+                    "tu": ["scrivessi", "avessi scritto", "scriveresti"],
+                    "lui/lei": ["scrivesse", "avesse scritto", "scriverebbe"],
+                    "noi": ["scrivessimo", "avessimo scritto", "scriveremmo"],
+                    "voi": ["scriveste", "aveste scritto", "scrivereste"],
+                    "loro": ["scrivessero", "avessero scritto", "scriverrebbero"]
+                },
+                "aprire": {
+                    "io": ["aprisse", "avessi aperto", "aprirei"],
+                    "tu": ["aprisse", "avessi aperto", "apriresti"],
+                    "lui/lei": ["aprisse", "avesse aperto", "aprirebbe"],
+                    "noi": ["aprissemo", "avessimo aperto", "apriremmo"],
+                    "voi": ["apriste", "aveste aperto", "aprireste"],
+                    "loro": ["aprissero", "avessero aperto", "aprirebbero"]
+                },
+                "chiudere": {
+                    "io": ["chiudessi", "avessi chiuso", "chiuderei"],
+                    "tu": ["chiudessi", "avessi chiuso", "chiuderesti"],
+                    "lui/lei": ["chiudesse", "avesse chiuso", "chiuderebbe"],
+                    "noi": ["chiudessimo", "avessimo chiuso", "chiuderemmo"],
+                    "voi": ["chiudeste", "aveste chiuso", "chiudereste"],
+                    "loro": ["chiudessero", "avessero chiuso", "chiuderebbero"]
+                },
+                "vivere": {
+                    "io": ["vivessi", "avessi vissuto", "vivrei"],
+                    "tu": ["vivessi", "avessi vissuto", "vivresti"],
+                    "lui/lei": ["vivesse", "avesse vissuto", "vivrebbe"],
+                    "noi": ["vivessimo", "avessimo vissuto", "vivremmo"],
+                    "voi": ["viveste", "aveste vissuto", "vivreste"],
+                    "loro": ["vivessero", "avessero vissuto", "vivrebbero"]
+                },
+                "morire": {
+                    "io": ["morissi", "fossi morto/a", "morirei"],
+                    "tu": ["morissi", "fossi morto/a", "moriresti"],
+                    "lui/lei": ["morisse", "fosse morto/a", "morirebbe"],
+                    "noi": ["morissimo", "fossimo morti/e", "moriremmo"],
+                    "voi": ["moriste", "foste morti/e", "morireste"],
+                    "loro": ["morissero", "fossero morti/e", "morirebbero"]
+                },
+                "credere": {
+                    "io": ["credessi", "avessi creduto", "crederei"],
+                    "tu": ["credessi", "avessi creduto", "crederesti"],
+                    "lui/lei": ["credesse", "avesse creduto", "crederebbe"],
+                    "noi": ["credessimo", "avessimo creduto", "crederemmo"],
+                    "voi": ["credeste", "aveste creduto", "credereste"],
+                    "loro": ["credessero", "avessero creduto", "crederebbero"]
+                },
+                "ricevere": {
+                    "io": ["ricevessi", "avessi ricevuto", "riceverei"],
+                    "tu": ["ricevessi", "avessi ricevuto", "riceveresti"],
+                    "lui/lei": ["ricevesse", "avesse ricevuto", "riceverebbe"],
+                    "noi": ["ricevessimo", "avessimo ricevuto", "riceveremmo"],
+                    "voi": ["riceveste", "aveste ricevuto", "ricevereste"],
+                    "loro": ["ricevessero", "avessero ricevuto", "riceverebbero"]
+                },
+                "conoscere": {
+                    "io": ["conoscessi", "avessi conosciuto", "conoscerei"],
+                    "tu": ["conoscessi", "avessi conosciuto", "conosceresti"],
+                    "lui/lei": ["conoscesse", "avesse conosciuto", "conoscerebbe"],
+                    "noi": ["conoscessimo", "avessimo conosciuto", "conosceremmo"],
+                    "voi": ["conosceste", "aveste conosciuto", "conoscereste"],
+                    "loro": ["conoscessero", "avessero conosciuto", "conoscerebbero"]
+                },
+                "offrire": {
+                    "io": ["offrissi", "avessi offerto", "offrirei"],
+                    "tu": ["offrissi", "avessi offerto", "offriresti"],
+                    "lui/lei": ["offrisse", "avesse offerto", "offrirebbe"],
+                    "noi": ["offrissimo", "avessimo offerto", "offriremmo"],
+                    "voi": ["offriste", "aveste offerto", "offrireste"],
+                    "loro": ["offrissero", "avessero offerto", "offrirebbero"]
+                },
+                "soffrire": {
+                    "io": ["soffrissi", "avessi sofferto", "soffrirei"],
+                    "tu": ["soffrissi", "avessi sofferto", "soffriresti"],
+                    "lui/lei": ["soffrisse", "avesse sofferto", "soffrirebbe"],
+                    "noi": ["soffrissimo", "avessimo sofferto", "soffriremmo"],
+                    "voi": ["soffriste", "aveste sofferto", "soffrireste"],
+                    "loro": ["soffrissero", "avessero sofferto", "soffrirebbero"]
+                },
+                "finire": {
+                    "io": ["finissi", "avessi finito", "finirei"],
+                    "tu": ["finissi", "avessi finito", "finiresti"],
+                    "lui/lei": ["finisse", "avesse finito", "finirebbe"],
+                    "noi": ["finissimo", "avessimo finito", "finiremmo"],
+                    "voi": ["finiste", "aveste finito", "finireste"],
+                    "loro": ["finissero", "avessero finito", "finirebbero"]
+                },
+                "sentire": {
+                    "io": ["sentissi", "avessi sentito", "sentirei"],
+                    "tu": ["sentissi", "avessi sentito", "sentiresti"],
+                    "lui/lei": ["sentisse", "avesse sentito", "sentirebbe"],
+                    "noi": ["sentissimo", "avessimo sentito", "sentiremmo"],
+                    "voi": ["sentiste", "aveste sentito", "sentireste"],
+                    "loro": ["sentissero", "avessero sentito", "sentirebbero"]
+                }
+            }
+        };
+
+        const titulosOpciones = {
+            1: ["verbo (persona)", "Indicativo Futuro semplice", "Congiuntivo presente", "Congiuntivo passato"],
+            2: ["verbo (persona)", "Indicativo Passato Prossimo", "Indicativo Imperfetto", "Indicativo Trapassato prossimo"],
+            3: ["verbo (persona)", "Congiuntivo Imperfetto", "Congiuntivo Trapassato", "Condizionale Presente"]
+        };
+
+        let opcionActual = null;
+        let verbosSeleccionados = [];
+
+        function generarVerbos() {
+            const verbosDisponibles = [...verbos];
+            verbosSeleccionados = [];
+            for (let i = 0; i < 10; i++) {
+                const indice = Math.floor(Math.random() * verbosDisponibles.length);
+                const verbo = verbosDisponibles.splice(indice, 1)[0];
+                const persona = personas[Math.floor(Math.random() * personas.length)];
+                verbosSeleccionados.push({ verbo, persona });
+            }
+        }
+
+        function crearTabla() {
+            if (opcionActual === null) return;
+
+            const header = document.getElementById('table-header');
+            const body = document.getElementById('table-body');
+            const titulos = titulosOpciones[opcionActual];
+
+            // Crear encabezado
+            header.innerHTML = `<tr>${titulos.map(t => `<th>${t}</th>`).join('')}</tr>`;
+
+            // Crear cuerpo
+            body.innerHTML = '';
+            verbosSeleccionados.forEach((item, index) => {
+                const row = document.createElement('tr');
+                // Primera celda: verbo (persona)
+                const verboCelda = document.createElement('td');
+                verboCelda.textContent = `${item.verbo} (${item.persona})`;
+                row.appendChild(verboCelda);
+
+                // Celdas de entrada
+                for (let i = 0; i < 3; i++) {
+                    const celda = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.dataset.verboIndex = index;
+                    input.dataset.tiempoIndex = i;
+                    input.dataset.persona = item.persona;
+                    input.dataset.verbo = item.verbo;
+
+                    input.addEventListener('blur', validarInput);
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            validarInput({ target: input });
+                        }
+                    });
+
+                    celda.appendChild(input);
+                    row.appendChild(celda);
+                }
+                body.appendChild(row);
+            });
+
+            document.getElementById('verb-table').classList.remove('hidden');
+        }
+
+        function validarInput(event) {
+            const input = event.target;
+            const valor = input.value.trim();
+            const verboIndex = parseInt(input.dataset.verboIndex);
+            const tiempoIndex = parseInt(input.dataset.tiempoIndex);
+            const verbo = input.dataset.verbo;
+            const persona = input.dataset.persona;
+
+            // Si ya está validado, no hacer nada
+            if (input.classList.contains('correct') || input.classList.contains('incorrect')) {
+                return;
+            }
+
+            if (valor === '') {
+                input.className = '';
+                // Eliminar posible mensaje de respuesta correcta
+                const siguiente = input.parentNode.querySelector('.correct-answer');
+                if (siguiente) siguiente.remove();
+                return;
+            }
+
+            const respuestasCorrectas = conjugaciones[opcionActual][verbo][persona][tiempoIndex];
+            const esCorrecto = Array.isArray(respuestasCorrectas) 
+                ? respuestasCorrectas.some(r => r.toLowerCase() === valor.toLowerCase())
+                : respuestasCorrectas.toLowerCase() === valor.toLowerCase();
+
+            if (esCorrecto) {
+                input.classList.add('correct');
+                input.classList.remove('incorrect');
+                input.disabled = true;
+                // Eliminar posible mensaje de respuesta correcta
+                const siguiente = input.parentNode.querySelector('.correct-answer');
+                if (siguiente) siguiente.remove();
+            } else {
+                input.classList.add('incorrect');
+                input.classList.remove('correct');
+                input.disabled = true;
+                // Mostrar respuesta correcta
+                const respuestas = Array.isArray(respuestasCorrectas) ? respuestasCorrectas : [respuestasCorrectas];
+                const respuestasTexto = respuestas.join(' / ');
+                const mensaje = document.createElement('div');
+                mensaje.className = 'correct-answer';
+                mensaje.textContent = respuestasTexto;
+                input.parentNode.appendChild(mensaje);
+            }
+        }
+
+        function reiniciar() {
+            if (opcionActual === null) return;
+            const inputs = document.querySelectorAll('#verb-table input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.className = '';
+                input.disabled = false;
+                // Eliminar mensajes de respuesta correcta
+                const siguiente = input.parentNode.querySelector('.correct-answer');
+                if (siguiente) siguiente.remove();
+            });
+        }
+
+        function generarNuevosVerbos() {
+            if (opcionActual === null) return;
+            generarVerbos();
+            crearTabla();
+        }
+
+        // Event listeners para botones
+        document.getElementById('opcion1').addEventListener('click', () => {
+            opcionActual = 1;
+            generarVerbos();
+            crearTabla();
+        });
+
+        document.getElementById('opcion2').addEventListener('click', () => {
+            opcionActual = 2;
+            generarVerbos();
+            crearTabla();
+        });
+
+        document.getElementById('opcion3').addEventListener('click', () => {
+            opcionActual = 3;
+            generarVerbos();
+            crearTabla();
+        });
+
+        document.getElementById('reiniciar').addEventListener('click', reiniciar);
+        document.getElementById('generar').addEventListener('click', generarNuevosVerbos);
+    </script>
+</body>
+</html>
+
